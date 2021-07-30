@@ -1,4 +1,4 @@
-package com.comrades.baseproject;
+package com.comrades.domain.model;
 
 import java.sql.Date;
 

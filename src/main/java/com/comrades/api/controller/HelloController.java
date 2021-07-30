@@ -1,6 +1,9 @@
-package com.comrades.baseproject;
+package com.comrades.api.controller;
 
+import com.comrades.domain.model.Employee;
+import com.comrades.repository.DataSource;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.Connection;
@@ -11,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api/hello")
 public class HelloController {
 
     @GetMapping("/")

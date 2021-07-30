@@ -1,4 +1,4 @@
-package com.comrades.baseproject;
+package com.comrades.repository;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
