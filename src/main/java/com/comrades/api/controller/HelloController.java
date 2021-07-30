@@ -1,10 +1,17 @@
 package com.comrades.api.controller;
 
+import com.comrades.application.TestDto;
 import com.comrades.domain.model.Employee;
 import com.comrades.repository.DataSource;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -18,7 +25,7 @@ import java.util.List;
 public class HelloController {
 
     @GetMapping("/")
-    public List<Employee> index() {
+    public List<Employee> Get() {
 
         final String SQL_QUERY = "select * from emp";
         List<Employee> employees = null;
@@ -42,6 +49,20 @@ public class HelloController {
         }
         return employees;
 
+    }
+
+
+    @GetMapping("test")
+    @Operation(description = "Get a test model demo", parameters = {
+            @Parameter(name = "name", in = ParameterIn.QUERY, required = true, description = "name parameter")
+    })
+    public Mono<TestDto> getTestDto(final @RequestParam String name,
+                                    final ServerWebExchange exchange) {
+        TestDto testDto = new TestDto();
+        testDto.setName(name);
+        testDto.setAge(0);
+        testDto.setName("Welcome "+name);
+        return Mono.just(testDto);
     }
 
 }
