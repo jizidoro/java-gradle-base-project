@@ -6,6 +6,7 @@ import com.comrades.repository.DataSource;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,6 +18,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,6 +65,12 @@ public class HelloController {
         testDto.setAge(0);
         testDto.setName("Welcome "+name);
         return Mono.just(testDto);
+    }
+
+    @GetMapping("/flux_result")
+    public Mono<String> getResult(ServerHttpRequest request) {
+        return Mono.defer(() -> Mono.just("Result is ready!"))
+                .delaySubscription(Duration.ofMillis(500));
     }
 
 }
