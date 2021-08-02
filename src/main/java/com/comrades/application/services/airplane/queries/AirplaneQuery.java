@@ -12,6 +12,8 @@ import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 
 @Service
@@ -21,7 +23,7 @@ public class AirplaneQuery {
 
     private final AirplaneRepository AirplaneRepository;
 
-    public Flux<Airplane> findAll() {
+    public Flux<Airplane> findAll() throws URISyntaxException, IOException, InterruptedException {
         return AirplaneRepository.findAll();
     }
 

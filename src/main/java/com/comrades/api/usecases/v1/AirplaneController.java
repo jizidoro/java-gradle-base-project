@@ -37,7 +37,12 @@ public class AirplaneController {
     @Operation(summary = "List all Airplanes",
             tags = {"Airplane"})
     public Flux<Airplane> listAll() {
-        return AirplaneQuery.findAll();
+        try {
+            return AirplaneQuery.findAll();
+        } catch (Exception ex) {
+            return Flux.empty();
+        }
+
     }
 
     @GetMapping(path = "{id}")
