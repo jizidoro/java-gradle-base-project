@@ -1,8 +1,8 @@
-package com.comrades.api.controller;
+package com.comrades.api.usecases.v1;
 
-import com.comrades.api.exception.BookNotFoundException;
-import com.comrades.domain.model.Book;
-import com.comrades.repository.BookRepository;
+import com.comrades.api.exceptions.BusinessException;
+import com.comrades.domain.models.Book;
+import com.comrades.persistence.repositories.BookRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/book")
@@ -35,9 +36,9 @@ public class BookController {
             @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
             @ApiResponse(responseCode = "404", description = "Book not found", content = @Content)}) // @formatter:on
     @GetMapping("/{id}")
-    public Book findById(@Parameter(description = "id of book to be searched") @PathVariable long id) {
+    public Book findById(@Parameter(description = "id of book to be searched") @PathVariable UUID id) {
         return repository.findById(id)
-                .orElseThrow(() -> new BookNotFoundException());
+                .orElseThrow(() -> new BusinessException());
     }
 
     @GetMapping("/")

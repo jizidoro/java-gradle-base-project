@@ -1,6 +1,6 @@
-package com.comrades.repository;
+package com.comrades.persistence.repositories;
 
-import com.comrades.domain.model.Book;
+import com.comrades.domain.models.Book;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -13,9 +13,9 @@ import static java.util.stream.Collectors.toList;
 @Repository
 public class BookRepository {
 
-    private Map<Long, Book> books = new HashMap<>();
+    private Map<UUID, Book> books = new HashMap<>();
 
-    public Optional<Book> findById(long id) {
+    public Optional<Book> findById(UUID id) {
         return Optional.ofNullable(books.get(id));
     }
 

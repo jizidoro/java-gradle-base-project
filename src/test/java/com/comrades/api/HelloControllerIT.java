@@ -1,6 +1,6 @@
 package com.comrades.api;
 
-import com.comrades.domain.model.Employee;
+import com.comrades.domain.models.Employee;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -26,7 +26,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-rsocket'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.liquibase:liquibase-core'
+	// implementation 'org.liquibase:liquibase-core'
 	implementation 'io.swagger.core.v3:swagger-annotations:2.1.10'
 	implementation 'com.j256.ormlite:ormlite-jdbc:5.6'
 	implementation 'com.zaxxer:HikariCP:5.0.0'

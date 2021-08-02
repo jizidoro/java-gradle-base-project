@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: comrades
+  liquibase:
+    changeLog: "classpath:db/migration/change-log.json"
+
+# R2DBC URL
+r2dbc:
+  url: r2dbc:h2:mem://./testdbv1
+
+server:
+  port: 8090
+
+springdoc:
+  api-docs:
+    path: /api/docs
+  swagger-ui:
+    path: /api/docs/swagger.html
+    operationsSorter: method
+    
+    
+    

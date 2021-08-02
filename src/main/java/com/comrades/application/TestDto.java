@@ -1,11 +1,15 @@
 package com.comrades.application;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-/**
- * @author Karanbir Singh on 07/23/2020
- */
+@Getter
+@Setter
+@NoArgsConstructor
 public class TestDto {
 
     @NotEmpty
@@ -16,28 +20,4 @@ public class TestDto {
 
     @NotNull
     private Integer age;
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Integer getAge() {
-        return age;
-    }
-
-    public void setAge(Integer age) {
-        this.age = age;
-    }
 }

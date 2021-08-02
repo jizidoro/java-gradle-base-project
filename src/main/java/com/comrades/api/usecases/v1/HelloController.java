@@ -1,8 +1,8 @@
-package com.comrades.api.controller;
+package com.comrades.api.usecases.v1;
 
 import com.comrades.application.TestDto;
-import com.comrades.domain.model.Employee;
-import com.comrades.repository.DataSource;
+import com.comrades.domain.models.Employee;
+import com.comrades.persistence.dataaccess.DatasourceConfig;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -21,6 +21,7 @@ import java.sql.SQLException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/hello")
@@ -29,13 +30,15 @@ public class HelloController {
     @GetMapping("/")
     public List<Employee> Get() {
 
+        var hikariDataSource = DatasourceConfig.connectHikariDataSource();
         final String SQL_QUERY = "select * from emp";
         List<Employee> employees = null;
-        try (Connection con = DataSource.getConnection(); PreparedStatement pst = con.prepareStatement(SQL_QUERY); ResultSet rs = pst.executeQuery();) {
+        try (Connection con = hikariDataSource.getConnection(); PreparedStatement pst = con.prepareStatement(SQL_QUERY); ResultSet rs = pst.executeQuery();) {
             employees = new ArrayList<Employee>();
             Employee employee;
             while (rs.next()) {
                 employee = new Employee();
+                employee.setId(UUID.fromString(rs.getString("id")));
                 employee.setEmpNo(rs.getInt("empno"));
                 employee.setEname(rs.getString("ename"));
                 employee.setJob(rs.getString("job"));
