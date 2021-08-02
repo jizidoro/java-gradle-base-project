@@ -4,9 +4,10 @@ spring:
   liquibase:
     changeLog: "classpath:db/migration/change-log.json"
 
-# R2DBC URL
-r2dbc:
-  url: r2dbc:h2:mem://./testdbv1
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/comrades?schema=public
+    username: postgres
+    password: qwe123
 
 server:
   port: 8090
