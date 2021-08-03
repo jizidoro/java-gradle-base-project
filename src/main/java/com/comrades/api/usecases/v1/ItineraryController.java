@@ -1,5 +1,6 @@
 package com.comrades.api.usecases.v1;
 
+import com.comrades.application.services.busline.dtos.BusLineDto;
 import com.comrades.application.services.itinerary.commands.ItineraryCommand;
 import com.comrades.application.services.itinerary.dtos.ItineraryDto;
 import com.comrades.application.services.itinerary.queries.ItineraryQuery;
@@ -47,11 +48,23 @@ public class ItineraryController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "List all itineraries by line",
             tags = {"Itinerary"})
-    public Mono<ItineraryDto> findItineraryByLine(String busLineName) {
+    public Flux<ItineraryDto> findItineraryByLine(String busLineName) {
         try {
-            return ItineraryQuery.findItineraryByLine(busLineName);
+            return ItineraryQuery.findItineraryByLineName(busLineName);
         } catch (Exception ex) {
-            return Mono.empty();
+            return Flux.empty();
+        }
+    }
+
+    @GetMapping(path = "findBusLineInRadius")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "List all itineraries by line",
+            tags = {"Itinerary"})
+    public Flux<BusLineDto> findBusLineInRadius() {
+        try {
+            return ItineraryQuery.findBusLineInRadius();
+        } catch (Exception ex) {
+            return Flux.empty();
         }
     }
 

@@ -1,9 +1,8 @@
 package com.comrades.application.services.itinerary.queries;
 
 import com.comrades.application.externals.BusLineExternal;
-import com.comrades.application.services.airplane.dtos.AirplaneDto;
+import com.comrades.application.services.busline.dtos.BusLineDto;
 import com.comrades.application.services.itinerary.dtos.ItineraryDto;
-import com.comrades.domain.models.Itinerary;
 import com.comrades.persistence.repositories.ItineraryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +15,8 @@ import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -30,6 +31,18 @@ public class ItineraryQuery {
         var result = ItineraryRepository.findAll();
 
         return result.map(x -> new ItineraryDto(x));
+    }
+
+    public Flux<BusLineDto> findBusLineInRadius() throws URISyntaxException, IOException, InterruptedException {
+
+
+        var busLines = BusLineExternal.findAllBusLine();
+        for (var busline : busLines) {
+            var result = BusLineExternal.findItineraryByLine(busline.id);
+        }
+
+
+        return Flux.empty();
     }
 
     public static double distance(double lat1, double lat2, double lon1,
@@ -48,10 +61,16 @@ public class ItineraryQuery {
         return Math.sqrt(distance);
     }
 
-    public Mono<ItineraryDto> findItineraryByLine(String lineName) throws URISyntaxException, IOException, InterruptedException, JSONException {
-        var itinerary = BusLineExternal.getItineraryByLine(lineName);
+    public Flux<ItineraryDto> findItineraryByLineName(String lineName) throws URISyntaxException, IOException, InterruptedException, JSONException {
+        var busLines = BusLineExternal.findAllBusLine();
+        var selectedBusLines = Arrays.stream(busLines).filter(x -> lineName.equals(x.nome)).toArray(BusLineDto[]::new);
 
-        return Mono.just(itinerary);
+        List<ItineraryDto> itineraries = new ArrayList<>();
+        for (var busline : selectedBusLines) {
+            itineraries.add(BusLineExternal.findItineraryByLine(busline.getId()));
+        }
+
+        return Flux.fromArray(itineraries.toArray(ItineraryDto[]::new));
     }
 
     public Mono<ItineraryDto> findById(int id) {

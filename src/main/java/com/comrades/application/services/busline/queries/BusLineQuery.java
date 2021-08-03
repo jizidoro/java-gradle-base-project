@@ -1,7 +1,6 @@
 package com.comrades.application.services.busline.queries;
 
 import com.comrades.application.externals.BusLineExternal;
-import com.comrades.application.services.airplane.dtos.AirplaneDto;
 import com.comrades.application.services.busline.dtos.BusLineDto;
 import com.comrades.persistence.repositories.BusLineRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +24,7 @@ public class BusLineQuery {
     private final BusLineRepository BusLineRepository;
 
     public Flux<BusLineDto> findAllBusLinesJson() throws URISyntaxException, IOException, InterruptedException {
-        var busLines = BusLineExternal.findAllBusLines();
+        var busLines = BusLineExternal.findAllBusLine();
         return Flux.fromArray(busLines);
     }
 
@@ -36,7 +35,7 @@ public class BusLineQuery {
 
 
     public Flux<BusLineDto> findBusLineByName(String busLineName) throws URISyntaxException, IOException, InterruptedException {
-        var busLines = BusLineExternal.findAllBusLines();
+        var busLines = BusLineExternal.findAllBusLine();
         var result = Arrays.stream(busLines).filter(c -> busLineName.equals(c.getNome())).toArray(BusLineDto[]::new);
         return Flux.fromArray(result);
     }

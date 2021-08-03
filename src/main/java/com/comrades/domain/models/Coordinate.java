@@ -4,7 +4,6 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
-
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
@@ -13,12 +12,15 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @Builder
 @With
-@Table("cord_sq_cordinate")
-public class Cordinate {
+@Table("cord_sq_coordinate")
+public class Coordinate {
 
     @Id
-    @Column("itne_sq_itinerary")
+    @Column("cord_sq_coordinate")
     private Integer id;
+
+    @Column("itne_sq_itinerary")
+    private Integer itineraryId;
 
     @NotNull
     @Column("cord_tx_longitude")
@@ -27,5 +29,7 @@ public class Cordinate {
     @NotNull
     @Column("cord_tx_latitude")
     private String latitude;
+
+
 
 }

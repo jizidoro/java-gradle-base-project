@@ -20,6 +20,9 @@ public class Itinerary {
     @Column("itne_sq_itinerary")
     private Integer id;
 
+    @Column("busi_sq_bus_line")
+    private Integer busLineId;
+
     @NotNull
     @Column("itne_tx_name")
     private String nome;
