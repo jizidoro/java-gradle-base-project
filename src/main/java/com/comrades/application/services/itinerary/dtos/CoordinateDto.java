@@ -10,6 +10,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class CoordinateDto {
+    private Integer id;
     public int itineraryId;
     public double lat;
     public double lng;

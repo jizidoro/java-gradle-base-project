@@ -11,6 +11,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class ItineraryDto {
+    private Integer id;
     public int idlinha;
     public String nome;
     public String codigo;
