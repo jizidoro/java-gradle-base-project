@@ -20,12 +20,14 @@ ALTER TABLE public.itne_itinerary
 
 CREATE TABLE public.cord_coordinate
 (
-    cord_sq_coordinate int4    NOT NULL,
-    itne_sq_itinerary  int4    NOT NULL,
-    cord_tx_longitude  varchar NOT NULL,
-    cord_tx_latitude   varchar NOT NULL,
+    cord_sq_coordinate int4             NOT NULL,
+    itne_sq_itinerary  int4             NOT NULL,
+    cord_dp_longitude  DOUBLE PRECISION NOT NULL,
+    cord_dp_latitude   DOUBLE PRECISION NOT NULL,
     CONSTRAINT cord_coordinate_pkey PRIMARY KEY (cord_sq_coordinate)
 );
+
+
 
 ALTER TABLE public.cord_coordinate
     ADD CONSTRAINT fk_itne_cord FOREIGN KEY (itne_sq_itinerary) REFERENCES public.itne_itinerary (itne_sq_itinerary);

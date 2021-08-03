@@ -60,9 +60,9 @@ public class ItineraryController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "List all itineraries by line",
             tags = {"Itinerary"})
-    public Flux<BusLineDto> findBusLineInRadius() {
+    public Flux<BusLineDto> findBusLineInRadius(double latitudeSelected, double longitudeSelected, double distanceSelected) {
         try {
-            return ItineraryQuery.findBusLineInRadius();
+            return ItineraryQuery.findBusLineInRadius(latitudeSelected, longitudeSelected, distanceSelected);
         } catch (Exception ex) {
             return Flux.empty();
         }

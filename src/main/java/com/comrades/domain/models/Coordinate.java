@@ -24,11 +24,11 @@ public class Coordinate {
 
     @NotNull
     @Column("cord_tx_longitude")
-    private String longitude;
+    private double longitude;
 
     @NotNull
     @Column("cord_tx_latitude")
-    private String latitude;
+    private double latitude;
 
 
 

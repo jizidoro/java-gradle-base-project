@@ -43,38 +43,46 @@ public class BusLineExternal {
     }
 
 
-    public ItineraryDto findItineraryByLine(int lineNumber) throws URISyntaxException, IOException, InterruptedException {
+    public ItineraryDto findItineraryByLine(int lineNumber) {
 
-        var uri = "http://www.poatransporte.com.br/php/facades/process.php?a=il&p=" + String.valueOf(lineNumber);
-        HttpResponse<String> response = getHttpResponse(uri);
+        try {
+            var uri = "http://www.poatransporte.com.br/php/facades/process.php?a=il&p=" + String.valueOf(lineNumber);
+            HttpResponse<String> response = getHttpResponse(uri);
 
-        String responseBody = response.body();
-        int responseStatusCode = response.statusCode();
+            String responseBody = response.body();
+            int responseStatusCode = response.statusCode();
 
 
-        if (responseStatusCode == 200) {
-            ObjectMapper objectMapper = new ObjectMapper();
-            var itineraryDto = new ItineraryDto();
+            if (responseStatusCode == 200) {
+                ObjectMapper objectMapper = new ObjectMapper();
+                var itineraryDto = new ItineraryDto();
 
-            Map<String, Object> itineraryHashMap = new ObjectMapper().readValue(responseBody, HashMap.class);
+                Map<String, Object> itineraryHashMap = new ObjectMapper().readValue(responseBody, HashMap.class);
 
-            itineraryDto.idlinha = tryParseInt((String) itineraryHashMap.get("idlinha"));
-            itineraryDto.codigo = (String) itineraryHashMap.get("codigo");
-            itineraryDto.nome = (String) itineraryHashMap.get("nome");
+                itineraryDto.idlinha = tryParseInt((String) itineraryHashMap.get("idlinha"));
+                itineraryDto.codigo = (String) itineraryHashMap.get("codigo");
+                itineraryDto.nome = (String) itineraryHashMap.get("nome");
 
-            var oto = new ArrayList<CoordinateDto>();
+                var oto = new ArrayList<CoordinateDto>();
 
-            for (var item : itineraryHashMap.entrySet()) {
-                var isLatitude = tryParseInt(item.getKey()) >= 0;
-                if (isLatitude) {
-                    var coordinate =
-                            objectMapper.convertValue(item.getValue(), CoordinateDto.class);
+                for (var item : itineraryHashMap.entrySet()) {
+                    var isLatitude = tryParseInt(item.getKey()) >= 0;
+                    if (isLatitude) {
+                        var coordinate =
+                                objectMapper.convertValue(item.getValue(), CoordinateDto.class);
 
-                    oto.add(coordinate);
+                        oto.add(coordinate);
+                    }
                 }
+                itineraryDto.setCoordinatesDto(oto);
+                return itineraryDto;
             }
-            itineraryDto.setCoordinatesDto(oto);
-            return itineraryDto;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return null;

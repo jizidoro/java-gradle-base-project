@@ -10,14 +10,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class CoordinateDto {
-    public int id;
     public int itineraryId;
-    public String lat;
-    public String lng;
+    public double lat;
+    public double lng;
 
     public CoordinateDto(Coordinate x) {
-        id = x.getId();
-        id = x.getItineraryId();
+        itineraryId = x.getItineraryId();
         lat = x.getLatitude();
         lng = x.getLongitude();
     }

@@ -11,14 +11,12 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class ItineraryDto {
-    public int id;
     public int idlinha;
     public String nome;
     public String codigo;
     List<CoordinateDto> coordinatesDto;
 
     public ItineraryDto(Itinerary x) {
-        id = x.getId();
         idlinha = x.getBusLineId();
         nome = x.getNome();
         codigo = x.getCodigo();

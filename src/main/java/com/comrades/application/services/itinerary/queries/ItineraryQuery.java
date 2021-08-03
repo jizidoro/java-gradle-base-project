@@ -2,6 +2,7 @@ package com.comrades.application.services.itinerary.queries;
 
 import com.comrades.application.externals.BusLineExternal;
 import com.comrades.application.services.busline.dtos.BusLineDto;
+import com.comrades.application.services.itinerary.dtos.CoordinateDto;
 import com.comrades.application.services.itinerary.dtos.ItineraryDto;
 import com.comrades.persistence.repositories.ItineraryRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,12 +13,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.ParallelFlux;
+import reactor.core.scheduler.Schedulers;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.time.Duration;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -33,32 +36,60 @@ public class ItineraryQuery {
         return result.map(x -> new ItineraryDto(x));
     }
 
-    public Flux<BusLineDto> findBusLineInRadius() throws URISyntaxException, IOException, InterruptedException {
-
-
+    public Flux<BusLineDto> findBusLineInRadius(double latitudeSelected, double longitudeSelected, double distanceSelected) throws URISyntaxException, IOException, InterruptedException {
         var busLines = BusLineExternal.findAllBusLine();
-        for (var busline : busLines) {
-            var result = BusLineExternal.findItineraryByLine(busline.id);
-        }
+        List<ItineraryDto> itineraries = new ArrayList<>();
 
+        Flux.fromArray(busLines)
+                .parallel(8)
+                .runOn(Schedulers.parallel())
+                .doOnNext(i -> {
+                    System.out.println("primeira parte" + i.getId());
+                    itineraries.add(BusLineExternal.findItineraryByLine(i.getId()));
+                })
+                .sequential()
+                .blockLast();
 
-        return Flux.empty();
+        var busLineIds = distance(latitudeSelected, longitudeSelected, distanceSelected, itineraries.toArray(ItineraryDto[]::new));
+
+        var result = Arrays.stream(busLines).filter(x -> busLineIds.contains(x.getId())).toArray(BusLineDto[]::new);
+
+        return Flux.fromArray(result);
     }
 
-    public static double distance(double lat1, double lat2, double lon1,
-                                  double lon2) {
+
+    public static List<Integer> distance(double latitudeSelected, double longitudeSelected, double distanceSelected, ItineraryDto[] itineraries) {
 
         final int R = 6371;
 
-        double latDistance = Math.toRadians(lat2 - lat1);
-        double lonDistance = Math.toRadians(lon2 - lon1);
-        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
-                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
-                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        double distance = R * c * 1000;
+        List<Integer> busLineIds = new ArrayList<>();
 
-        return Math.sqrt(distance);
+        Flux.fromArray(itineraries)
+                .parallel(8)
+                .runOn(Schedulers.parallel())
+                .doOnNext(i -> {
+                    System.out.println("segunda parte" + i.getIdlinha());
+                    for (var coordenada : i.getCoordinatesDto()) {
+                        double latDistance = Math.toRadians(coordenada.getLat() - latitudeSelected);
+                        double lonDistance = Math.toRadians(coordenada.getLng() - longitudeSelected);
+                        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                                + Math.cos(Math.toRadians(latitudeSelected)) * Math.cos(Math.toRadians(coordenada.getLat()))
+                                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+                        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                        double calculateDistance = R * c * 1000;
+
+                        var result = Math.sqrt(calculateDistance);
+
+                        if (result < distanceSelected) {
+                            busLineIds.add(i.getIdlinha());
+                        }
+                    }
+
+                })
+                .sequential()
+                .blockLast();
+
+        return busLineIds;
     }
 
     public Flux<ItineraryDto> findItineraryByLineName(String lineName) throws URISyntaxException, IOException, InterruptedException, JSONException {
@@ -66,9 +97,11 @@ public class ItineraryQuery {
         var selectedBusLines = Arrays.stream(busLines).filter(x -> lineName.equals(x.nome)).toArray(BusLineDto[]::new);
 
         List<ItineraryDto> itineraries = new ArrayList<>();
-        for (var busline : selectedBusLines) {
-            itineraries.add(BusLineExternal.findItineraryByLine(busline.getId()));
-        }
+
+        Flux.fromArray(selectedBusLines).flatMap(x -> {
+            itineraries.add(BusLineExternal.findItineraryByLine(x.getId()));
+            return null;
+        });
 
         return Flux.fromArray(itineraries.toArray(ItineraryDto[]::new));
     }
