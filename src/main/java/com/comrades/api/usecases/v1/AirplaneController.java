@@ -2,6 +2,7 @@ package com.comrades.api.usecases.v1;
 
 
 import com.comrades.application.services.airplane.commands.AirplaneCommand;
+import com.comrades.application.services.airplane.dtos.AirplaneDto;
 import com.comrades.application.services.airplane.queries.AirplaneQuery;
 import com.comrades.domain.models.Airplane;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,7 +37,7 @@ public class AirplaneController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "List all Airplanes",
             tags = {"Airplane"})
-    public Flux<Airplane> listAll() {
+    public Flux<AirplaneDto> listAll() {
         try {
             return AirplaneQuery.findAll();
         } catch (Exception ex) {
@@ -49,7 +50,7 @@ public class AirplaneController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(
             tags = {"Airplane"})
-    public Mono<Airplane> findById(@PathVariable int id) {
+    public Mono<AirplaneDto> findById(@PathVariable int id) {
         return AirplaneQuery.findById(id);
     }
 

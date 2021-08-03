@@ -1,5 +1,6 @@
 package com.comrades.domain.models;
 
+import com.comrades.application.services.airplane.dtos.AirplaneDto;
 import lombok.*;
 
 import org.springframework.data.annotation.Id;

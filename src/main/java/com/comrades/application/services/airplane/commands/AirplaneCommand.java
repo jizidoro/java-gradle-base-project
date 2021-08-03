@@ -34,23 +34,23 @@ public class AirplaneCommand {
     @Transactional
     public Flux<Airplane> saveAll(List<Airplane> Airplanes) {
         return AirplaneRepository.saveAll(Airplanes)
-            .doOnNext(this::throwResponseStatusExceptionWhenEmptyName);
+                .doOnNext(this::throwResponseStatusExceptionWhenEmptyName);
     }
 
-    private void throwResponseStatusExceptionWhenEmptyName(Airplane Airplane){
-        if(StringUtil.isNullOrEmpty(Airplane.getName())){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Invalid Name");
+    private void throwResponseStatusExceptionWhenEmptyName(Airplane Airplane) {
+        if (StringUtil.isNullOrEmpty(Airplane.getName())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Name");
         }
     }
 
     public Mono<Void> update(Airplane Airplane) {
-        return AirplaneQuery.findById(Airplane.getId())
-            .flatMap(AirplaneRepository::save)
-            .then();
+        return AirplaneRepository.findById(Airplane.getId())
+                .flatMap(AirplaneRepository::save)
+                .then();
     }
 
     public Mono<Void> delete(int id) {
-        return AirplaneQuery.findById(id)
-            .flatMap(AirplaneRepository::delete);
+        return AirplaneRepository.findById(id)
+                .flatMap(AirplaneRepository::delete);
     }
 }

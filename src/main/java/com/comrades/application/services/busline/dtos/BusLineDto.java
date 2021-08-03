@@ -1,12 +1,21 @@
 package com.comrades.application.services.busline.dtos;
 
+import com.comrades.domain.models.BusLine;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class BusLineDto {
-    public String id;
+    public int id;
     public String codigo;
     public String nome;
+
+    public BusLineDto(BusLine x) {
+        id = x.getId();
+        codigo = x.getCodigo();
+        nome = x.getNome();
+    }
 }

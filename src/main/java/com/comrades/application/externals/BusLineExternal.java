@@ -21,7 +21,7 @@ import java.util.*;
 @Service
 public class BusLineExternal {
 
-    public BusLineDto[] getAllBusLines() throws URISyntaxException, IOException, InterruptedException {
+    public BusLineDto[] findAllBusLines() throws URISyntaxException, IOException, InterruptedException {
 
         var uri = "http://www.poatransporte.com.br/php/facades/process.php?a=nc&p=%&t=o";
         var encoder = uri.replace("%", "%25");
@@ -58,7 +58,7 @@ public class BusLineExternal {
 
             Map<String, Object> itineraryHashMap = new ObjectMapper().readValue(responseBody, HashMap.class);
 
-            itineraryDto.idlinha = (String) itineraryHashMap.get("idlinha");
+            itineraryDto.idlinha = (int) itineraryHashMap.get("idlinha");
             itineraryDto.codigo = (String) itineraryHashMap.get("codigo");
             itineraryDto.nome = (String) itineraryHashMap.get("nome");
 

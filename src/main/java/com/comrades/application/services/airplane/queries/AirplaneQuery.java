@@ -1,5 +1,6 @@
 package com.comrades.application.services.airplane.queries;
 
+import com.comrades.application.services.airplane.dtos.AirplaneDto;
 import com.comrades.domain.models.Airplane;
 import com.comrades.persistence.repositories.AirplaneRepository;
 import io.netty.util.internal.StringUtil;
@@ -23,13 +24,15 @@ public class AirplaneQuery {
 
     private final AirplaneRepository AirplaneRepository;
 
-    public Flux<Airplane> findAll() throws URISyntaxException, IOException, InterruptedException {
-        return AirplaneRepository.findAll();
+    public Flux<AirplaneDto> findAll() throws URISyntaxException, IOException, InterruptedException {
+        var result = AirplaneRepository.findAll();
+        return result.map(x -> new AirplaneDto(x));
     }
 
-    public Mono<Airplane> findById(int id) {
-        return AirplaneRepository.findById(id)
-            .switchIfEmpty(monoResponseStatusNotFoundException());
+    public Mono<AirplaneDto> findById(int id) {
+        var result = AirplaneRepository.findById(id)
+                .switchIfEmpty(monoResponseStatusNotFoundException());
+        return result.map(x -> new AirplaneDto(x));
     }
 
     public <T> Mono<T> monoResponseStatusNotFoundException() {
