@@ -1,5 +1,6 @@
 package com.comrades.application.services.airplane.queries;
 
+import com.comrades.application.mappers.AirplaneMapper;
 import com.comrades.application.services.airplane.dtos.AirplaneDto;
 import com.comrades.domain.models.Airplane;
 import com.comrades.persistence.repositories.AirplaneRepository;
@@ -26,14 +27,15 @@ public class AirplaneQuery {
 
     public Flux<AirplaneDto> findAll() throws URISyntaxException, IOException, InterruptedException {
         var result = AirplaneRepository.findAll();
-        return result.map(x -> new AirplaneDto(x));
+        return result.map(x -> AirplaneMapper.INSTANCE.airplaneToAirplaneDto(x));
     }
 
     public Mono<AirplaneDto> findById(int id) {
         var result = AirplaneRepository.findById(id)
                 .switchIfEmpty(monoResponseStatusNotFoundException());
-        return result.map(x -> new AirplaneDto(x));
+        return result.map(x -> AirplaneMapper.INSTANCE.airplaneToAirplaneDto(x));
     }
+
 
     public <T> Mono<T> monoResponseStatusNotFoundException() {
         return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Airplane not found"));

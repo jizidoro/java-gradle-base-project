@@ -1,6 +1,8 @@
 package com.comrades.application.services.itinerary.queries;
 
 import com.comrades.application.externals.BusLineExternal;
+import com.comrades.application.mappers.BusLineMapper;
+import com.comrades.application.mappers.ItineraryMapper;
 import com.comrades.application.services.busline.dtos.BusLineDto;
 import com.comrades.application.services.itinerary.dtos.CoordinateDto;
 import com.comrades.application.services.itinerary.dtos.ItineraryDto;
@@ -33,7 +35,7 @@ public class ItineraryQuery {
     public Flux<ItineraryDto> findAll() throws URISyntaxException, IOException, InterruptedException {
         var result = ItineraryRepository.findAll();
 
-        return result.map(x -> new ItineraryDto(x));
+        return result.map(x -> ItineraryMapper.INSTANCE.itineraryToItineraryDto(x));
     }
 
     public Flux<BusLineDto> findBusLineInRadius(double latitudeSelected, double longitudeSelected, double distanceSelected) throws URISyntaxException, IOException, InterruptedException {
@@ -44,7 +46,6 @@ public class ItineraryQuery {
                 .parallel(8)
                 .runOn(Schedulers.parallel())
                 .doOnNext(i -> {
-                    System.out.println("primeira parte" + i.getId());
                     itineraries.add(BusLineExternal.findItineraryByLine(i.getId()));
                 })
                 .sequential()
@@ -68,12 +69,11 @@ public class ItineraryQuery {
                 .parallel(8)
                 .runOn(Schedulers.parallel())
                 .doOnNext(i -> {
-                    System.out.println("segunda parte" + i.getIdlinha());
-                    for (var coordenada : i.getCoordinatesDto()) {
-                        double latDistance = Math.toRadians(coordenada.getLat() - latitudeSelected);
-                        double lonDistance = Math.toRadians(coordenada.getLng() - longitudeSelected);
+                    for (var coordinate : i.getCoordinatesDto()) {
+                        double latDistance = Math.toRadians(coordinate.getLat() - latitudeSelected);
+                        double lonDistance = Math.toRadians(coordinate.getLng() - longitudeSelected);
                         double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
-                                + Math.cos(Math.toRadians(latitudeSelected)) * Math.cos(Math.toRadians(coordenada.getLat()))
+                                + Math.cos(Math.toRadians(latitudeSelected)) * Math.cos(Math.toRadians(coordinate.getLat()))
                                 * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
                         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
                         double calculateDistance = R * c * 1000;
@@ -95,13 +95,16 @@ public class ItineraryQuery {
     public Flux<ItineraryDto> findItineraryByLineName(String lineName) throws URISyntaxException, IOException, InterruptedException, JSONException {
         var busLines = BusLineExternal.findAllBusLine();
         var selectedBusLines = Arrays.stream(busLines).filter(x -> lineName.equals(x.nome)).toArray(BusLineDto[]::new);
-
         List<ItineraryDto> itineraries = new ArrayList<>();
 
-        Flux.fromArray(selectedBusLines).flatMap(x -> {
-            itineraries.add(BusLineExternal.findItineraryByLine(x.getId()));
-            return null;
-        });
+        Flux.fromArray(selectedBusLines)
+                .parallel(8)
+                .runOn(Schedulers.parallel())
+                .doOnNext(i -> {
+                    itineraries.add(BusLineExternal.findItineraryByLine(i.getId()));
+                })
+                .sequential()
+                .blockLast();
 
         return Flux.fromArray(itineraries.toArray(ItineraryDto[]::new));
     }
@@ -109,7 +112,7 @@ public class ItineraryQuery {
     public Mono<ItineraryDto> findById(int id) {
         var result = ItineraryRepository.findById(id)
                 .switchIfEmpty(monoResponseStatusNotFoundException());
-        return result.map(x -> new ItineraryDto(x));
+        return result.map(x -> ItineraryMapper.INSTANCE.itineraryToItineraryDto(x));
     }
 
     public <T> Mono<T> monoResponseStatusNotFoundException() {

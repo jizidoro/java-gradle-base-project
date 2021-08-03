@@ -51,7 +51,11 @@ public class AirplaneController {
     @Operation(
             tags = {"Airplane"})
     public Mono<AirplaneDto> findById(@PathVariable int id) {
-        return AirplaneQuery.findById(id);
+        try {
+            return AirplaneQuery.findById(id);
+        } catch (Exception ex) {
+            return Mono.empty();
+        }
     }
 
     @PostMapping
@@ -59,7 +63,11 @@ public class AirplaneController {
     @Operation(
             tags = {"Airplane"})
     public Mono<Airplane> save(@Valid @RequestBody Airplane Airplane) {
-        return AirplaneCommand.save(Airplane);
+        try {
+            return AirplaneCommand.save(Airplane);
+        } catch (Exception ex) {
+            return Mono.empty();
+        }
     }
 
     @PostMapping("batch")
@@ -67,7 +75,11 @@ public class AirplaneController {
     @Operation(
             tags = {"Airplane"})
     public Flux<Airplane> saveBatch(@RequestBody List<Airplane> Airplanes) {
-        return AirplaneCommand.saveAll(Airplanes);
+        try {
+            return AirplaneCommand.saveAll(Airplanes);
+        } catch (Exception ex) {
+            return Flux.empty();
+        }
     }
 
     @PutMapping(path = "{id}")
@@ -75,7 +87,11 @@ public class AirplaneController {
     @Operation(
             tags = {"Airplane"})
     public Mono<Void> update(@PathVariable int id, @Valid @RequestBody Airplane Airplane) {
-        return AirplaneCommand.update(Airplane.withId(id));
+        try {
+            return AirplaneCommand.update(Airplane.withId(id));
+        } catch (Exception ex) {
+            return Mono.empty();
+        }
     }
 
     @DeleteMapping(path = "{id}")
@@ -83,7 +99,11 @@ public class AirplaneController {
     @Operation(
             tags = {"Airplane"})
     public Mono<Void> delete(@PathVariable int id) {
-        return AirplaneCommand.delete(id);
+        try {
+            return AirplaneCommand.delete(id);
+        } catch (Exception ex) {
+            return Mono.empty();
+        }
     }
 
 }

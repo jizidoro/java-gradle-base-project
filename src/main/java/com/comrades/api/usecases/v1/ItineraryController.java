@@ -73,7 +73,11 @@ public class ItineraryController {
     @Operation(
             tags = {"Itinerary"})
     public Mono<ItineraryDto> findById(@PathVariable int id) {
-        return ItineraryQuery.findById(id);
+        try {
+            return ItineraryQuery.findById(id);
+        } catch (Exception ex) {
+            return Mono.empty();
+        }
     }
 
     @PostMapping
@@ -89,7 +93,11 @@ public class ItineraryController {
     @Operation(
             tags = {"Itinerary"})
     public Flux<Itinerary> saveBatch(@RequestBody List<Itinerary> itineraries) {
-        return ItineraryCommand.saveAll(itineraries);
+        try {
+            return ItineraryCommand.saveAll(itineraries);
+        } catch (Exception ex) {
+            return Flux.empty();
+        }
     }
 
     @PutMapping(path = "{id}")
@@ -97,7 +105,11 @@ public class ItineraryController {
     @Operation(
             tags = {"Itinerary"})
     public Mono<Void> update(@PathVariable int id, @Valid @RequestBody Itinerary Itinerary) {
-        return ItineraryCommand.update(Itinerary.withId(id));
+        try {
+            return ItineraryCommand.update(Itinerary.withId(id));
+        } catch (Exception ex) {
+            return Mono.empty();
+        }
     }
 
     @DeleteMapping(path = "{id}")
@@ -105,7 +117,11 @@ public class ItineraryController {
     @Operation(
             tags = {"Itinerary"})
     public Mono<Void> delete(@PathVariable int id) {
-        return ItineraryCommand.delete(id);
+        try {
+            return ItineraryCommand.delete(id);
+        } catch (Exception ex) {
+            return Mono.empty();
+        }
     }
 
 }

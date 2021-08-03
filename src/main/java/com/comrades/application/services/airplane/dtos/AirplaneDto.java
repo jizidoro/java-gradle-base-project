@@ -25,11 +25,4 @@ public class AirplaneDto {
 
     private String dataRegistro;
 
-    public AirplaneDto(Airplane x) {
-        id = x.getId();
-        name = x.getName();
-        modelo = x.getModelo();
-        quantidadePassageiro = x.getQuantidadePassageiro();
-        dataRegistro = x.getDataRegistro();
-    }
 }

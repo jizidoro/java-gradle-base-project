@@ -13,9 +13,5 @@ public class BusLineDto {
     public String codigo;
     public String nome;
 
-    public BusLineDto(BusLine x) {
-        id = x.getId();
-        codigo = x.getCodigo();
-        nome = x.getNome();
-    }
+
 }

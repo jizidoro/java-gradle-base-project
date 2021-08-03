@@ -15,10 +15,5 @@ public class CoordinateDto {
     public double lat;
     public double lng;
 
-    public CoordinateDto(Coordinate x) {
-        itineraryId = x.getItineraryId();
-        lat = x.getLatitude();
-        lng = x.getLongitude();
-    }
 }
 

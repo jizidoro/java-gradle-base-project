@@ -1,6 +1,8 @@
 package com.comrades.application.services.busline.queries;
 
 import com.comrades.application.externals.BusLineExternal;
+import com.comrades.application.mappers.AirplaneMapper;
+import com.comrades.application.mappers.BusLineMapper;
 import com.comrades.application.services.busline.dtos.BusLineDto;
 import com.comrades.persistence.repositories.BusLineRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,9 +32,8 @@ public class BusLineQuery {
 
     public Flux<BusLineDto> findAll() throws URISyntaxException, IOException, InterruptedException {
         var result = BusLineRepository.findAll();
-        return result.map(x -> new BusLineDto(x));
+        return result.map(x -> BusLineMapper.INSTANCE.busLineToBusLineDto(x));
     }
-
 
     public Flux<BusLineDto> findBusLineByName(String busLineName) throws URISyntaxException, IOException, InterruptedException {
         var busLines = BusLineExternal.findAllBusLine();
@@ -43,7 +44,7 @@ public class BusLineQuery {
     public Mono<BusLineDto> findById(int id) {
         var result = BusLineRepository.findById(id)
                 .switchIfEmpty(monoResponseStatusNotFoundException());
-        return result.map(x -> new BusLineDto(x));
+        return result.map(x -> BusLineMapper.INSTANCE.busLineToBusLineDto(x));
     }
 
     public <T> Mono<T> monoResponseStatusNotFoundException() {

@@ -82,7 +82,11 @@ public class BusLineController {
     @Operation(
             tags = {"BusLine"})
     public Mono<BusLine> save(@Valid @RequestBody BusLine BusLine) {
-        return BusLineCommand.save(BusLine);
+        try {
+            return BusLineCommand.save(BusLine);
+        } catch (Exception ex) {
+            return Mono.empty();
+        }
     }
 
     @PostMapping("batch")
@@ -90,7 +94,11 @@ public class BusLineController {
     @Operation(
             tags = {"BusLine"})
     public Flux<BusLine> saveBatch(@RequestBody List<BusLine> BusLines) {
-        return BusLineCommand.saveAll(BusLines);
+        try {
+            return BusLineCommand.saveAll(BusLines);
+        } catch (Exception ex) {
+            return Flux.empty();
+        }
     }
 
     @PutMapping(path = "{id}")
@@ -98,7 +106,11 @@ public class BusLineController {
     @Operation(
             tags = {"BusLine"})
     public Mono<Void> update(@PathVariable int id, @Valid @RequestBody BusLine BusLine) {
-        return BusLineCommand.update(BusLine.withId(id));
+        try {
+            return BusLineCommand.update(BusLine.withId(id));
+        } catch (Exception ex) {
+            return Mono.empty();
+        }
     }
 
     @DeleteMapping(path = "{id}")
@@ -106,7 +118,11 @@ public class BusLineController {
     @Operation(
             tags = {"BusLine"})
     public Mono<Void> delete(@PathVariable int id) {
-        return BusLineCommand.delete(id);
+        try {
+            return BusLineCommand.delete(id);
+        } catch (Exception ex) {
+            return Mono.empty();
+        }
     }
 
 }
