@@ -28,4 +28,6 @@ public class AirplaneDto {
 
     private String dataRegistro;
 
+    private FuelTypeEnum fuelType;
+
 }

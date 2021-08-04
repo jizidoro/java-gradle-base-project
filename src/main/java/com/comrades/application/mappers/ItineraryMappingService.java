@@ -39,7 +39,7 @@ public class ItineraryMappingService {
         ItineraryDto itineraryDto = itineraryMapper.toItineraryDto(itinerary);
         return Mono.zip(
                 coordinateRepository.findByItinerary(itinerary.getId()).collectList().map(itineraryMapper::toCoordinateDtos),
-                coordinateRepository.findByItinerary(itinerary.getId()).collectList().map(itineraryMapper::toCoordinateDtos),
+                Mono.just(""),
                 (coordinateDtos, unused) -> {
                     itineraryDto.setCoordinates(coordinateDtos);
                     return itineraryDto;

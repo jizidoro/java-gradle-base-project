@@ -1,5 +1,6 @@
 package com.comrades.application.services.itinerary.commands;
 
+import com.comrades.application.mappers.CoordinateMapper;
 import com.comrades.application.mappers.ItineraryMapper;
 import com.comrades.application.services.itinerary.IItineraryCommand;
 import com.comrades.application.services.itinerary.dtos.ItineraryDto;
@@ -30,8 +31,9 @@ public class ItineraryCommand implements IItineraryCommand {
     private final UseCaseFacade facade;
 
     public Mono<Itinerary> save(ItineraryDto itinerary) {
-        var result = ItineraryMapper.INSTANCE.toItinerary(itinerary);
-        var uc = new UcItineraryCreate(result);
+        var mappedItinerary = ItineraryMapper.INSTANCE.toItinerary(itinerary);
+        var mappedCoordinates = CoordinateMapper.INSTANCE.toCoordinateList(itinerary.getCoordinates());
+        var uc = new UcItineraryCreate(mappedItinerary, mappedCoordinates);
         return facade.execute(uc);
     }
 
