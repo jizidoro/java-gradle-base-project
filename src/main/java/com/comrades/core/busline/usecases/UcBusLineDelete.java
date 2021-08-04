@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
 public class UcBusLineDelete extends UseCase<Void> {
 
     @Autowired
-    private IBusLineRepository BusLineRepository;
+    private IBusLineRepository _busLineRepository;
 
     private int id;
 
@@ -23,8 +23,8 @@ public class UcBusLineDelete extends UseCase<Void> {
 
     @Override
     protected Mono<Void> execute() throws Exception {
-        var result = BusLineRepository.findById(id)
-                .flatMap(BusLineRepository::delete);
+        var result = _busLineRepository.findById(id)
+                .flatMap(_busLineRepository::delete);
 
         return result;
     }

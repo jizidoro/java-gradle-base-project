@@ -1,10 +1,11 @@
 package com.comrades.application.services.itinerary.dtos;
 
-import com.comrades.domain.models.Itinerary;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Getter
@@ -12,9 +13,18 @@ import java.util.List;
 @NoArgsConstructor
 public class ItineraryDto {
     private Integer id;
-    public int idlinha;
+
+    @NotNull
+    public Integer idlinha;
+
+    @NotNull
+    @NotEmpty
     public String nome;
+
+    @NotNull
+    @NotEmpty
     public String codigo;
+
     List<CoordinateDto> coordinatesDto;
 
 }

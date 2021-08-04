@@ -4,7 +4,9 @@ import com.comrades.application.mappers.ItineraryMapper;
 import com.comrades.application.services.itinerary.IItineraryCommand;
 import com.comrades.application.services.itinerary.dtos.ItineraryDto;
 import com.comrades.core.bases.UseCaseFacade;
+import com.comrades.core.itinerary.usecases.UcItineraryCreate;
 import com.comrades.core.itinerary.usecases.UcItineraryDelete;
+import com.comrades.core.itinerary.usecases.UcItineraryEdit;
 import com.comrades.domain.models.Itinerary;
 import com.comrades.persistence.repositories.IItineraryRepository;
 import io.netty.util.internal.StringUtil;
@@ -29,7 +31,8 @@ public class ItineraryCommand implements IItineraryCommand {
 
     public Mono<Itinerary> save(ItineraryDto itinerary) {
         var result = ItineraryMapper.INSTANCE.toItinerary(itinerary);
-        return _itineraryRepository.save(result);
+        var uc = new UcItineraryCreate(result);
+        return facade.execute(uc);
     }
 
     @Transactional
@@ -45,9 +48,9 @@ public class ItineraryCommand implements IItineraryCommand {
     }
 
     public Mono<Void> update(ItineraryDto itinerary) {
-        return _itineraryRepository.findById(itinerary.getId())
-                .flatMap(_itineraryRepository::save)
-                .then();
+        var result = ItineraryMapper.INSTANCE.toItinerary(itinerary);
+        var uc = new UcItineraryEdit(result);
+        return facade.execute(uc).then();
     }
 
     public Mono<Void> delete(int id) {

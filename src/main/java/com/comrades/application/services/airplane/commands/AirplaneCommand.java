@@ -3,7 +3,9 @@ package com.comrades.application.services.airplane.commands;
 import com.comrades.application.mappers.AirplaneMapper;
 import com.comrades.application.services.airplane.IAirplaneCommand;
 import com.comrades.application.services.airplane.dtos.AirplaneDto;
+import com.comrades.core.airplane.usecases.UcAirplaneCreate;
 import com.comrades.core.airplane.usecases.UcAirplaneDelete;
+import com.comrades.core.airplane.usecases.UcAirplaneEdit;
 import com.comrades.core.bases.UseCaseFacade;
 import com.comrades.domain.models.Airplane;
 import com.comrades.persistence.repositories.IAirplaneRepository;
@@ -29,7 +31,8 @@ public class AirplaneCommand implements IAirplaneCommand {
 
     public Mono<Airplane> save(AirplaneDto airplane) {
         var result = AirplaneMapper.INSTANCE.toAirplane(airplane);
-        return _airplaneRepository.save(result);
+        var uc = new UcAirplaneCreate(result);
+        return facade.execute(uc);
     }
 
     @Transactional
@@ -39,15 +42,15 @@ public class AirplaneCommand implements IAirplaneCommand {
     }
 
     private void throwResponseStatusExceptionWhenEmptyName(Airplane airplane) {
-        if (StringUtil.isNullOrEmpty(airplane.getName())) {
+        if (StringUtil.isNullOrEmpty(airplane.getCodigo())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Name");
         }
     }
 
     public Mono<Void> update(AirplaneDto airplane) {
-        return _airplaneRepository.findById(airplane.getId())
-                .flatMap(_airplaneRepository::save)
-                .then();
+        var result = AirplaneMapper.INSTANCE.toAirplane(airplane);
+        var uc = new UcAirplaneEdit(result);
+        return facade.execute(uc).then();
     }
 
     public Mono<Void> delete(int id) {

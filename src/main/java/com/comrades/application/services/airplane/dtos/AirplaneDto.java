@@ -1,11 +1,8 @@
 package com.comrades.application.services.airplane.dtos;
 
-import com.comrades.domain.models.Airplane;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -17,10 +14,16 @@ public class AirplaneDto {
 
     private Integer id;
 
-    private String name;
+    @NotNull
+    @NotEmpty
+    private String codigo;
 
+    @NotNull
+    @NotEmpty
     private String modelo;
 
+    @NotNull
+    @NotEmpty
     private Integer quantidadePassageiro;
 
     private String dataRegistro;

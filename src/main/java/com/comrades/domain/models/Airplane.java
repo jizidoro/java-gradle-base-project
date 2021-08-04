@@ -25,7 +25,7 @@ public class Airplane {
     @NotNull
     @NotEmpty(message = "The name of this Airplane cannot be empty")
     @Column("airp_tx_codigo")
-    private String name;
+    private String codigo;
 
     @Column("airp_tx_modelo")
     private String modelo;

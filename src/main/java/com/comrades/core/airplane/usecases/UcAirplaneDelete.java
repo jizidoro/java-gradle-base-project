@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
 public class UcAirplaneDelete extends UseCase<Void> {
 
     @Autowired
-    private IAirplaneRepository AirplaneRepository;
+    private IAirplaneRepository _airplaneRepository;
 
     private int id;
 
@@ -23,8 +23,8 @@ public class UcAirplaneDelete extends UseCase<Void> {
 
     @Override
     protected Mono<Void> execute() throws Exception {
-        var result = AirplaneRepository.findById(id)
-                .flatMap(AirplaneRepository::delete);
+        var result = _airplaneRepository.findById(id)
+                .flatMap(_airplaneRepository::delete);
 
         return result;
     }

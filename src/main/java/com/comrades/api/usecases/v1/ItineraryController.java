@@ -85,7 +85,11 @@ public class ItineraryController {
     @Operation(
             tags = {"Itinerary"})
     public Mono<Itinerary> save(@Valid @RequestBody ItineraryDto itinerary) {
-        return _itineraryCommand.save(itinerary);
+        try {
+            return _itineraryCommand.save(itinerary);
+        } catch (Exception ex) {
+            return Mono.empty();
+        }
     }
 
     @PostMapping("batch")

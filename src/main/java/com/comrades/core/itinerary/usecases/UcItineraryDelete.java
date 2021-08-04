@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
 public class UcItineraryDelete extends UseCase<Void> {
 
     @Autowired
-    private IItineraryRepository ItineraryRepository;
+    private IItineraryRepository _itineraryRepository;
 
     private int id;
 
@@ -23,8 +23,8 @@ public class UcItineraryDelete extends UseCase<Void> {
 
     @Override
     protected Mono<Void> execute() throws Exception {
-        var result = ItineraryRepository.findById(id)
-                .flatMap(ItineraryRepository::delete);
+        var result = _itineraryRepository.findById(id)
+                .flatMap(_itineraryRepository::delete);
 
         return result;
     }

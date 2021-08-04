@@ -4,7 +4,9 @@ import com.comrades.application.mappers.BusLineMapper;
 import com.comrades.application.services.busline.IBusLineCommand;
 import com.comrades.application.services.busline.dtos.BusLineDto;
 import com.comrades.core.bases.UseCaseFacade;
+import com.comrades.core.busline.usecases.UcBusLineCreate;
 import com.comrades.core.busline.usecases.UcBusLineDelete;
+import com.comrades.core.busline.usecases.UcBusLineEdit;
 import com.comrades.domain.models.BusLine;
 import com.comrades.persistence.repositories.IBusLineRepository;
 import io.netty.util.internal.StringUtil;
@@ -29,7 +31,8 @@ public class BusLineCommand implements IBusLineCommand {
 
     public Mono<BusLine> save(BusLineDto busLine) {
         var result = BusLineMapper.INSTANCE.toBusLine(busLine);
-        return _busLineRepository.save(result);
+        var uc = new UcBusLineCreate(result);
+        return facade.execute(uc);
     }
 
     @Transactional
@@ -45,9 +48,9 @@ public class BusLineCommand implements IBusLineCommand {
     }
 
     public Mono<Void> update(BusLineDto busLine) {
-        return _busLineRepository.findById(busLine.getId())
-                .flatMap(_busLineRepository::save)
-                .then();
+        var result = BusLineMapper.INSTANCE.toBusLine(busLine);
+        var uc = new UcBusLineEdit(result);
+        return facade.execute(uc).then();
     }
 
     public Mono<Void> delete(int id) {
