@@ -1,18 +1,16 @@
 package com.comrades.application.services.itinerary.queries;
 
+import com.comrades.application.bases.MonoResponse;
 import com.comrades.application.externals.BusLineExternal;
-import com.comrades.application.mappers.BusLineMapper;
 import com.comrades.application.mappers.ItineraryMapper;
 import com.comrades.application.services.busline.dtos.BusLineDto;
-import com.comrades.application.services.itinerary.dtos.CoordinateDto;
+import com.comrades.application.services.itinerary.IItineraryQuery;
 import com.comrades.application.services.itinerary.dtos.ItineraryDto;
-import com.comrades.persistence.repositories.ItineraryRepository;
+import com.comrades.persistence.repositories.IItineraryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.ParallelFlux;
@@ -20,38 +18,43 @@ import reactor.core.scheduler.Schedulers;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.time.Duration;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Consumer;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ItineraryQuery {
+public class ItineraryQuery implements IItineraryQuery {
 
-    private final BusLineExternal BusLineExternal;
-    private final ItineraryRepository ItineraryRepository;
+    private final BusLineExternal _busLineExternal;
+    private final IItineraryRepository _itineraryRepository;
 
     public Flux<ItineraryDto> findAll() throws URISyntaxException, IOException, InterruptedException {
-        var result = ItineraryRepository.findAll();
+        var result = _itineraryRepository.findAll();
 
-        return result.map(x -> ItineraryMapper.INSTANCE.itineraryToItineraryDto(x));
+        return result.map(x -> ItineraryMapper.INSTANCE.toItineraryDto(x));
     }
 
     public Flux<BusLineDto> findBusLineInRadius(double latitudeSelected, double longitudeSelected, double distanceSelected) throws URISyntaxException, IOException, InterruptedException {
-        var busLines = BusLineExternal.findAllBusLine();
+        var busLines = _busLineExternal.findAllBusLine();
         List<ItineraryDto> itineraries = new ArrayList<>();
+        List<Integer> busLineIds = new ArrayList<>();
 
-        Flux.fromArray(busLines)
-                .parallel(8)
-                .runOn(Schedulers.parallel())
-                .doOnNext(i -> {
-                    itineraries.add(BusLineExternal.findItineraryByLine(i.getId()));
-                })
-                .sequential()
-                .blockLast();
+        ParallelFlux<BusLineDto> searchItineraries = getBusLineDtoParallelFlux(busLines, itineraries);
+        ParallelFlux<ItineraryDto> nearBusLines = getItineraryDtoParallelFlux(latitudeSelected, longitudeSelected, distanceSelected,
+                itineraries.toArray(ItineraryDto[]::new), busLineIds);
 
-        var busLineIds = distance(latitudeSelected, longitudeSelected, distanceSelected, itineraries.toArray(ItineraryDto[]::new));
+        Flux.empty()
+                .thenMany(searchItineraries)
+                .thenMany(nearBusLines)
+                .subscribe(new Consumer<ItineraryDto>() {
+                    @Override
+                    public void accept(ItineraryDto itineraryDto) {
+                        log.info("done");
+                    }
+                });
 
         var result = Arrays.stream(busLines).filter(x -> busLineIds.contains(x.getId())).toArray(BusLineDto[]::new);
 
@@ -59,13 +62,20 @@ public class ItineraryQuery {
     }
 
 
-    public static List<Integer> distance(double latitudeSelected, double longitudeSelected, double distanceSelected, ItineraryDto[] itineraries) {
+    private ParallelFlux<BusLineDto> getBusLineDtoParallelFlux(BusLineDto[] busLines, List<ItineraryDto> itineraries) {
+        return Flux.fromArray(busLines)
+                .parallel(8)
+                .runOn(Schedulers.parallel())
+                .doOnNext(i -> {
+                    itineraries.add(_busLineExternal.findItineraryByLine(i.getId()));
+                });
+    }
 
+
+    private static ParallelFlux<ItineraryDto> getItineraryDtoParallelFlux(double latitudeSelected, double longitudeSelected, double distanceSelected, ItineraryDto[] itineraries, List<Integer> busLineIds) {
         final int R = 6371;
 
-        List<Integer> busLineIds = new ArrayList<>();
-
-        Flux.fromArray(itineraries)
+        return Flux.fromArray(itineraries)
                 .parallel(8)
                 .runOn(Schedulers.parallel())
                 .doOnNext(i -> {
@@ -84,16 +94,11 @@ public class ItineraryQuery {
                             busLineIds.add(i.getIdlinha());
                         }
                     }
-
-                })
-                .sequential()
-                .blockLast();
-
-        return busLineIds;
+                });
     }
 
     public Flux<ItineraryDto> findItineraryByLineName(String lineName) throws URISyntaxException, IOException, InterruptedException, JSONException {
-        var busLines = BusLineExternal.findAllBusLine();
+        var busLines = _busLineExternal.findAllBusLine();
         var selectedBusLines = Arrays.stream(busLines).filter(x -> lineName.equals(x.nome)).toArray(BusLineDto[]::new);
         List<ItineraryDto> itineraries = new ArrayList<>();
 
@@ -101,7 +106,7 @@ public class ItineraryQuery {
                 .parallel(8)
                 .runOn(Schedulers.parallel())
                 .doOnNext(i -> {
-                    itineraries.add(BusLineExternal.findItineraryByLine(i.getId()));
+                    itineraries.add(_busLineExternal.findItineraryByLine(i.getId()));
                 })
                 .sequential()
                 .blockLast();
@@ -110,13 +115,10 @@ public class ItineraryQuery {
     }
 
     public Mono<ItineraryDto> findById(int id) {
-        var result = ItineraryRepository.findById(id)
-                .switchIfEmpty(monoResponseStatusNotFoundException());
-        return result.map(x -> ItineraryMapper.INSTANCE.itineraryToItineraryDto(x));
+        var result = _itineraryRepository.findById(id)
+                .switchIfEmpty(MonoResponse.monoResponseStatusNotFoundException());
+        return result.map(x -> ItineraryMapper.INSTANCE.toItineraryDto(x));
     }
 
-    public <T> Mono<T> monoResponseStatusNotFoundException() {
-        return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Itinerary not found"));
-    }
 
 }

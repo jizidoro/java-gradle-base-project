@@ -10,7 +10,7 @@ public interface AirplaneMapper {
 
     AirplaneMapper INSTANCE = Mappers.getMapper(AirplaneMapper.class);
 
-    AirplaneDto airplaneToAirplaneDto(Airplane airplane);
+    AirplaneDto toAirplaneDto(Airplane airplane);
 
-    Airplane airplaneDtoToAirplane(AirplaneDto airplaneDto);
+    Airplane toAirplane(AirplaneDto airplaneDto);
 }

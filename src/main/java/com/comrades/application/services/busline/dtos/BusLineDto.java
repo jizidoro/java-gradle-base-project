@@ -1,6 +1,5 @@
 package com.comrades.application.services.busline.dtos;
 
-import com.comrades.domain.models.BusLine;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,7 +8,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class BusLineDto {
-    public int id;
+    public Integer id;
     public String codigo;
     public String nome;
 

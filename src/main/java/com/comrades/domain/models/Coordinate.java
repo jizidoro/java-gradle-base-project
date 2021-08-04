@@ -1,18 +1,20 @@
 package com.comrades.domain.models;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
-import javax.validation.constraints.NotEmpty;
+
 import javax.validation.constraints.NotNull;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@With
-@Table("cord_sq_coordinate")
+@Table("cord_coordinate")
 public class Coordinate {
 
     @Id
@@ -23,13 +25,10 @@ public class Coordinate {
     private Integer itineraryId;
 
     @NotNull
-    @Column("cord_tx_longitude")
-    private double longitude;
+    @Column("cord_dp_longitude")
+    private Double longitude;
 
     @NotNull
-    @Column("cord_tx_latitude")
-    private double latitude;
-
-
-
+    @Column("cord_dp_latitude")
+    private Double latitude;
 }

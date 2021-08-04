@@ -1,7 +1,10 @@
 package com.comrades.application.services.itinerary.commands;
 
+import com.comrades.application.mappers.ItineraryMapper;
+import com.comrades.application.services.itinerary.IItineraryCommand;
+import com.comrades.application.services.itinerary.dtos.ItineraryDto;
 import com.comrades.domain.models.Itinerary;
-import com.comrades.persistence.repositories.ItineraryRepository;
+import com.comrades.persistence.repositories.IItineraryRepository;
 import io.netty.util.internal.StringUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,21 +20,18 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ItineraryCommand {
+public class ItineraryCommand implements IItineraryCommand {
 
-    private final ItineraryRepository ItineraryRepository;
+    private final IItineraryRepository _itineraryRepository;
 
-    public <T> Mono<T> monoResponseStatusNotFoundException() {
-        return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Itinerary not found"));
-    }
-
-    public Mono<Itinerary> save(Itinerary Itinerary) {
-        return ItineraryRepository.save(Itinerary);
+    public Mono<Itinerary> save(ItineraryDto itinerary) {
+        var result = ItineraryMapper.INSTANCE.toItinerary(itinerary);
+        return _itineraryRepository.save(result);
     }
 
     @Transactional
     public Flux<Itinerary> saveAll(List<Itinerary> itineraries) {
-        return ItineraryRepository.saveAll(itineraries)
+        return _itineraryRepository.saveAll(itineraries)
                 .doOnNext(this::throwResponseStatusExceptionWhenEmptyName);
     }
 
@@ -41,14 +41,14 @@ public class ItineraryCommand {
         }
     }
 
-    public Mono<Void> update(Itinerary Itinerary) {
-        return ItineraryRepository.findById(Itinerary.getId())
-                .flatMap(ItineraryRepository::save)
+    public Mono<Void> update(ItineraryDto itinerary) {
+        return _itineraryRepository.findById(itinerary.getId())
+                .flatMap(_itineraryRepository::save)
                 .then();
     }
 
     public Mono<Void> delete(int id) {
-        return ItineraryRepository.findById(id)
-                .flatMap(ItineraryRepository::delete);
+        return _itineraryRepository.findById(id)
+                .flatMap(_itineraryRepository::delete);
     }
 }

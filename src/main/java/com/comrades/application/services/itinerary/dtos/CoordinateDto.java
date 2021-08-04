@@ -1,7 +1,5 @@
 package com.comrades.application.services.itinerary.dtos;
 
-import com.comrades.domain.models.Coordinate;
-import com.comrades.domain.models.Itinerary;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,9 +9,9 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CoordinateDto {
     private Integer id;
-    public int itineraryId;
-    public double lat;
-    public double lng;
+    public Integer itineraryId;
+    public Double lat;
+    public Double lng;
 
 }
 

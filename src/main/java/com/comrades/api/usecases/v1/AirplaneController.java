@@ -1,13 +1,12 @@
 package com.comrades.api.usecases.v1;
 
 
-import com.comrades.application.services.airplane.commands.AirplaneCommand;
+import com.comrades.application.services.airplane.IAirplaneCommand;
+import com.comrades.application.services.airplane.IAirplaneQuery;
 import com.comrades.application.services.airplane.dtos.AirplaneDto;
-import com.comrades.application.services.airplane.queries.AirplaneQuery;
 import com.comrades.domain.models.Airplane;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,8 +29,8 @@ import java.util.List;
 )
 public class AirplaneController {
 
-    private final AirplaneCommand AirplaneCommand;
-    private final AirplaneQuery AirplaneQuery;
+    private final IAirplaneCommand _airplaneCommand;
+    private final IAirplaneQuery _airplaneQuery;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
@@ -39,7 +38,7 @@ public class AirplaneController {
             tags = {"Airplane"})
     public Flux<AirplaneDto> listAll() {
         try {
-            return AirplaneQuery.findAll();
+            return _airplaneQuery.findAll();
         } catch (Exception ex) {
             return Flux.empty();
         }
@@ -52,7 +51,7 @@ public class AirplaneController {
             tags = {"Airplane"})
     public Mono<AirplaneDto> findById(@PathVariable int id) {
         try {
-            return AirplaneQuery.findById(id);
+            return _airplaneQuery.findById(id);
         } catch (Exception ex) {
             return Mono.empty();
         }
@@ -62,9 +61,9 @@ public class AirplaneController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(
             tags = {"Airplane"})
-    public Mono<Airplane> save(@Valid @RequestBody Airplane Airplane) {
+    public Mono<Airplane> save(@Valid @RequestBody AirplaneDto airplane) {
         try {
-            return AirplaneCommand.save(Airplane);
+            return _airplaneCommand.save(airplane);
         } catch (Exception ex) {
             return Mono.empty();
         }
@@ -76,7 +75,7 @@ public class AirplaneController {
             tags = {"Airplane"})
     public Flux<Airplane> saveBatch(@RequestBody List<Airplane> Airplanes) {
         try {
-            return AirplaneCommand.saveAll(Airplanes);
+            return _airplaneCommand.saveAll(Airplanes);
         } catch (Exception ex) {
             return Flux.empty();
         }
@@ -86,9 +85,9 @@ public class AirplaneController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(
             tags = {"Airplane"})
-    public Mono<Void> update(@PathVariable int id, @Valid @RequestBody Airplane Airplane) {
+    public Mono<Void> update(@PathVariable int id, @Valid @RequestBody AirplaneDto airplane) {
         try {
-            return AirplaneCommand.update(Airplane.withId(id));
+            return _airplaneCommand.update(airplane);
         } catch (Exception ex) {
             return Mono.empty();
         }
@@ -100,7 +99,7 @@ public class AirplaneController {
             tags = {"Airplane"})
     public Mono<Void> delete(@PathVariable int id) {
         try {
-            return AirplaneCommand.delete(id);
+            return _airplaneCommand.delete(id);
         } catch (Exception ex) {
             return Mono.empty();
         }

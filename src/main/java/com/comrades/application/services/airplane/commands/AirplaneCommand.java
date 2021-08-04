@@ -1,8 +1,12 @@
 package com.comrades.application.services.airplane.commands;
 
-import com.comrades.application.services.airplane.queries.AirplaneQuery;
+import com.comrades.application.mappers.AirplaneMapper;
+import com.comrades.application.services.airplane.IAirplaneCommand;
+import com.comrades.application.services.airplane.dtos.AirplaneDto;
+import com.comrades.core.airplane.usecases.UcAirplaneDelete;
+import com.comrades.core.bases.UseCaseFacade;
 import com.comrades.domain.models.Airplane;
-import com.comrades.persistence.repositories.AirplaneRepository;
+import com.comrades.persistence.repositories.IAirplaneRepository;
 import io.netty.util.internal.StringUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,39 +22,37 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class AirplaneCommand {
+public class AirplaneCommand implements IAirplaneCommand {
 
-    private final AirplaneRepository AirplaneRepository;
-    private final AirplaneQuery AirplaneQuery;
+    private final IAirplaneRepository _airplaneRepository;
+    private final UseCaseFacade facade;
 
-    public <T> Mono<T> monoResponseStatusNotFoundException() {
-        return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Airplane not found"));
-    }
-
-    public Mono<Airplane> save(Airplane Airplane) {
-        return AirplaneRepository.save(Airplane);
+    public Mono<Airplane> save(AirplaneDto airplane) {
+        var result = AirplaneMapper.INSTANCE.toAirplane(airplane);
+        return _airplaneRepository.save(result);
     }
 
     @Transactional
-    public Flux<Airplane> saveAll(List<Airplane> Airplanes) {
-        return AirplaneRepository.saveAll(Airplanes)
+    public Flux<Airplane> saveAll(List<Airplane> airplanes) {
+        return _airplaneRepository.saveAll(airplanes)
                 .doOnNext(this::throwResponseStatusExceptionWhenEmptyName);
     }
 
-    private void throwResponseStatusExceptionWhenEmptyName(Airplane Airplane) {
-        if (StringUtil.isNullOrEmpty(Airplane.getName())) {
+    private void throwResponseStatusExceptionWhenEmptyName(Airplane airplane) {
+        if (StringUtil.isNullOrEmpty(airplane.getName())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Name");
         }
     }
 
-    public Mono<Void> update(Airplane Airplane) {
-        return AirplaneRepository.findById(Airplane.getId())
-                .flatMap(AirplaneRepository::save)
+    public Mono<Void> update(AirplaneDto airplane) {
+        return _airplaneRepository.findById(airplane.getId())
+                .flatMap(_airplaneRepository::save)
                 .then();
     }
 
     public Mono<Void> delete(int id) {
-        return AirplaneRepository.findById(id)
-                .flatMap(AirplaneRepository::delete);
+        var uc = new UcAirplaneDelete(id);
+        var result = facade.execute(uc);
+        return result;
     }
 }

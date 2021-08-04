@@ -10,7 +10,7 @@ public interface BusLineMapper {
 
     BusLineMapper INSTANCE = Mappers.getMapper(BusLineMapper.class);
 
-    BusLineDto busLineToBusLineDto(BusLine busLine);
+    BusLineDto toBusLineDto(BusLine busLine);
 
-    BusLine busLineDtoToBusLine(BusLineDto busLineDto);
+    BusLine toBusLine(BusLineDto busLineDto);
 }
