@@ -52,7 +52,6 @@ public class AirplaneCommand implements IAirplaneCommand {
 
     public Mono<Void> delete(int id) {
         var uc = new UcAirplaneDelete(id);
-        var result = facade.execute(uc);
-        return result;
+        return facade.execute(uc).then();
     }
 }
