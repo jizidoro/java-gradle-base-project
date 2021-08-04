@@ -6,12 +6,14 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class ItineraryDto {
+
     private Integer id;
 
     @NotNull
@@ -25,6 +27,6 @@ public class ItineraryDto {
     @NotEmpty
     public String codigo;
 
-    List<CoordinateDto> coordinatesDto;
+    List<CoordinateDto> coordinates = new ArrayList<>();
 
 }

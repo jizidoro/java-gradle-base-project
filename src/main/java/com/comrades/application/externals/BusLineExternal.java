@@ -4,19 +4,17 @@ import com.comrades.application.services.busline.dtos.BusLineDto;
 import com.comrades.application.services.itinerary.dtos.CoordinateDto;
 import com.comrades.application.services.itinerary.dtos.ItineraryDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.catalina.mapper.Mapper;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class BusLineExternal {
@@ -74,7 +72,7 @@ public class BusLineExternal {
                         oto.add(coordinate);
                     }
                 }
-                itineraryDto.setCoordinatesDto(oto);
+                itineraryDto.setCoordinates(oto);
                 return itineraryDto;
             }
         } catch (IOException e) {

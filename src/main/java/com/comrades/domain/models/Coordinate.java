@@ -1,9 +1,9 @@
 package com.comrades.domain.models;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.With;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
@@ -12,12 +12,12 @@ import javax.validation.constraints.NotNull;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
-@Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Table("cord_coordinate")
 public class Coordinate {
 
     @Id
+    @With
     @Column("cord_sq_coordinate")
     private Integer id;
 
@@ -26,9 +26,9 @@ public class Coordinate {
 
     @NotNull
     @Column("cord_dp_longitude")
-    private Double longitude;
+    private Double lng;
 
     @NotNull
     @Column("cord_dp_latitude")
-    private Double latitude;
+    private Double lat;
 }

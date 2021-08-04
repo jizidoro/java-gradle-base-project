@@ -2,7 +2,7 @@ package com.comrades.application.services.itinerary.queries;
 
 import com.comrades.application.bases.MonoResponse;
 import com.comrades.application.externals.BusLineExternal;
-import com.comrades.application.mappers.ItineraryMapper;
+import com.comrades.application.mappers.ItineraryMappingService;
 import com.comrades.application.services.busline.dtos.BusLineDto;
 import com.comrades.application.services.itinerary.IItineraryQuery;
 import com.comrades.application.services.itinerary.dtos.ItineraryDto;
@@ -30,11 +30,12 @@ public class ItineraryQuery implements IItineraryQuery {
 
     private final BusLineExternal _busLineExternal;
     private final IItineraryRepository _itineraryRepository;
+    private final ItineraryMappingService itineraryMappingService;
 
     public Flux<ItineraryDto> findAll() throws URISyntaxException, IOException, InterruptedException {
         var result = _itineraryRepository.findAll();
 
-        return result.map(x -> ItineraryMapper.INSTANCE.toItineraryDto(x));
+        return result.flatMap(itineraryMappingService::toItineraryDto);
     }
 
     public Flux<BusLineDto> findBusLineInRadius(double latitudeSelected, double longitudeSelected, double distanceSelected) throws URISyntaxException, IOException, InterruptedException {
@@ -79,7 +80,7 @@ public class ItineraryQuery implements IItineraryQuery {
                 .parallel(8)
                 .runOn(Schedulers.parallel())
                 .doOnNext(i -> {
-                    for (var coordinate : i.getCoordinatesDto()) {
+                    for (var coordinate : i.getCoordinates()) {
                         double latDistance = Math.toRadians(coordinate.getLat() - latitudeSelected);
                         double lonDistance = Math.toRadians(coordinate.getLng() - longitudeSelected);
                         double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
@@ -117,7 +118,7 @@ public class ItineraryQuery implements IItineraryQuery {
     public Mono<ItineraryDto> findById(int id) {
         var result = _itineraryRepository.findById(id)
                 .switchIfEmpty(MonoResponse.monoResponseStatusNotFoundException());
-        return result.map(x -> ItineraryMapper.INSTANCE.toItineraryDto(x));
+        return result.flatMap(itineraryMappingService::toItineraryDto);
     }
 
 
