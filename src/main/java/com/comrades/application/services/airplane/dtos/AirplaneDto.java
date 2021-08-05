@@ -23,7 +23,6 @@ public class AirplaneDto {
     private String modelo;
 
     @NotNull
-    @NotEmpty
     private Integer quantidadePassageiro;
 
     private String dataRegistro;
